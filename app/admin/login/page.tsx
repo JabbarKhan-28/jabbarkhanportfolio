@@ -108,7 +108,7 @@ export default function AdminLoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@portfolio.com"
+                  placeholder="your@email.com"
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.07] transition-all"
                 />
               </div>
@@ -170,13 +170,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          {/* Default credentials hint */}
-          <div className="mt-6 pt-5 border-t border-white/[0.06]">
-            <p className="text-[11px] text-white/20 text-center">
-              Default: <span className="text-white/35">admin@portfolio.com</span> / <span className="text-white/35">admin123</span>
-            </p>
-          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { prisma } from "@/lib/prisma";
 import "./globals.css";
 
 const inter = Inter({
@@ -47,15 +48,44 @@ export const viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let isDark = true;
+  let primaryColor = "oklch(0.55 0.18 250)";
+  let secondaryColor = "oklch(0.60 0.18 280)";
+  let accentColor = "oklch(0.65 0.15 200)";
+  let borderRadius = "1.0rem";
+
+  try {
+    const appearance = await prisma.appearanceSetting.findUnique({
+      where: { id: "default" },
+    });
+    if (appearance) {
+      isDark = appearance.darkMode;
+      primaryColor = appearance.primaryColor;
+      secondaryColor = appearance.secondaryColor;
+      accentColor = appearance.accentColor;
+      borderRadius = appearance.borderRadius;
+    }
+  } catch (e) {
+    console.error("Failed to load appearance settings in layout:", e);
+  }
+
+  const themeStyles = {
+    "--primary": primaryColor,
+    "--secondary": secondaryColor,
+    "--accent": accentColor,
+    "--radius": borderRadius,
+  } as React.CSSProperties;
+
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${isDark ? "dark" : ""} ${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      style={themeStyles}
       suppressHydrationWarning
     >
       <body 

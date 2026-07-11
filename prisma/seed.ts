@@ -16,13 +16,13 @@ async function main() {
   console.log("Seeding database...");
 
   // 1. Create Default Admin User
-  const adminEmail = "admin@portfolio.com";
+  const adminEmail = "jabbar@portfolio.com";
   const existingUser = await prisma.user.findUnique({
     where: { email: adminEmail }
   });
 
   if (!existingUser) {
-    const passwordHash = hashPassword("admin123");
+    const passwordHash = hashPassword("JabbHaream28");
     await prisma.user.create({
       data: {
         email: adminEmail,

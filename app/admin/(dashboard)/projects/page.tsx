@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import {
   Plus, Pencil, Trash2, Search, Eye, EyeOff, Star, StarOff,
-  ExternalLink, Github, MoreHorizontal, CheckSquare, Square, X
+  ExternalLink, MoreHorizontal, CheckSquare, Square, X
 } from "lucide-react";
+import { Github } from "@/app/Components/common/icons";
 
 interface Project {
   id: string;
