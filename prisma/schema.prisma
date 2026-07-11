@@ -1,0 +1,239 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("Super Admin") // Super Admin, Editor, Viewer
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Project {
+  id           String   @id @default(uuid())
+  name         String
+  description  String
+  problem      String?
+  solution     String?
+  architecture String?
+  challenges   String?
+  result       String?
+  skills       String   // Comma-separated list of skills
+  githubLink   String?
+  liveLink     String?
+  playStoreUrl String?
+  appStoreUrl  String?
+  image        String?  // Thumbnail URL
+  gallery      String?  // JSON string array of image URLs
+  displayOrder Int      @default(0)
+  featured     Boolean  @default(false)
+  published    Boolean  @default(true)
+  category     String?  // Web / Mobile
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Skill {
+  id              String   @id @default(uuid())
+  name            String
+  icon            String   // Lucide icon name, e.g., "Code2"
+  color           String?  // Custom styling colors
+  category        String   // "Frontend Engineering", "Mobile Development", etc.
+  yearsExperience String?  // e.g., "2 years"
+  displayOrder    Int      @default(0)
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Experience {
+  id           String   @id @default(uuid())
+  type         String   // "work" | "education"
+  role         String
+  company      String
+  duration     String
+  icon         String   // Lucide icon name, e.g., "Briefcase"
+  points       String   // JSON string array of details
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Certification {
+  id            String   @id @default(uuid())
+  title         String
+  issuer        String
+  date          String
+  description   String?
+  icon          String   // Lucide icon name or emoji
+  credentialUrl String?
+  image         String?  // Image url if any
+  displayOrder  Int      @default(0)
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Service {
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  icon         String   // Lucide icon name
+  displayOrder Int      @default(0)
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Testimonial {
+  id           String   @id @default(uuid())
+  clientName   String
+  company      String
+  photo        String?  // Avatar image URL
+  role         String
+  rating       Int      @default(5)
+  feedback     String
+  published    Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AboutSection {
+  id         String   @id @default("default")
+  profilePic String?
+  heroImage  String?
+  biography  String
+  journey    String?
+  mission    String?
+  vision     String?
+  goals      String?  // JSON list
+  stats      String?  // JSON list of stats (number, label)
+  resumeUrl  String?
+  updatedAt  DateTime @updatedAt
+}
+
+model HeroSection {
+  id                String   @id @default("default")
+  headline          String
+  subheading        String
+  typingText        String   // JSON list of strings
+  buttonText        String?  @default("View Featured Work")
+  buttonLink        String?  @default("#projects")
+  availabilityBadge Boolean  @default(true)
+  currentPosition   String?
+  currentCompany    String?
+  profileImage      String?
+  backgroundImage   String?
+  updatedAt         DateTime @updatedAt
+}
+
+model ContactInfo {
+  id            String   @id @default("default")
+  email         String
+  phone         String
+  address       String
+  linkedin      String?
+  github        String?
+  twitter       String?
+  instagram     String?
+  facebook      String?
+  youtube       String?
+  behance       String?
+  dribbble      String?
+  medium        String?
+  devto         String?
+  googleMap     String?
+  businessHours String?
+  updatedAt     DateTime @updatedAt
+}
+
+model NavigationSetting {
+  id           String   @id @default(uuid())
+  sectionId    String   @unique // e.g., "home", "projects"
+  sectionName  String
+  label        String
+  href         String
+  visible      Boolean  @default(true)
+  displayOrder Int      @default(0)
+  updatedAt    DateTime @updatedAt
+}
+
+model SeoSetting {
+  id              String   @id @default("default")
+  pageTitle       String
+  metaDescription String
+  keywords        String   // Comma-separated
+  ogImage         String?
+  twitterCard     String?  @default("summary_large_image")
+  canonicalUrl    String?
+  robots          String?  @default("index, follow")
+  sitemap         String?
+  favicon         String?
+  structuredData  String?  // JSON LD format string
+  updatedAt       DateTime @updatedAt
+}
+
+model AppearanceSetting {
+  id             String   @id @default("default")
+  primaryColor   String   @default("oklch(0.55 0.18 250)") // Premium blue
+  secondaryColor String   @default("oklch(0.60 0.18 280)") // Violet/purple
+  accentColor    String   @default("oklch(0.65 0.15 200)") // Cyan accent
+  fontSans       String   @default("Inter")
+  fontHeading    String   @default("Space Grotesk")
+  borderRadius   String   @default("1.0rem") // var(--radius)
+  buttonStyle    String   @default("rounded-xl")
+  animationSpeed String   @default("normal")
+  darkMode       Boolean  @default(true)
+  gradientColors String   @default("linear-gradient(135deg, oklch(0.65 0.18 250) 0%, oklch(0.55 0.18 250) 50%, oklch(0.60 0.18 280) 100%)")
+  containerWidth String   @default("max-w-6xl")
+  sectionSpacing String   @default("py-24")
+  cardStyle      String   @default("glass-card")
+  shadowStyle    String   @default("shadow-xs")
+  updatedAt      DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  id                  String   @id @default("default")
+  websiteName         String   @default("Jabbar Khan")
+  logo                String?
+  favicon             String?
+  footerText          String?
+  copyright           String?
+  resumeFile          String?
+  maintenanceMode     Boolean  @default(false)
+  analyticsId         String?
+  googleSearchConsole String?
+  smtpHost            String?
+  smtpPort            Int?
+  smtpUser            String?
+  smtpPass            String?
+  updatedAt           DateTime @updatedAt
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  filename  String
+  url       String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
