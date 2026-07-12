@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import { projectsData } from "../../data/projects";
 import ProjectCard from "./projectCard";
 
-const Projects = () => {
-  // Extract top 3 best projects for high-impact showcase
-  const featuredProjects = projectsData.slice(0, 3);
+const Projects = ({ projectsData: dbProjectsData }: { projectsData?: any[] }) => {
+  // Extract top 3 best projects for high-impact showcase, filtered if from database
+  const featuredProjects = dbProjectsData && dbProjectsData.length > 0
+    ? dbProjectsData.filter((p: any) => p.featured && p.published).slice(0, 3)
+    : projectsData.slice(0, 3);
 
   return (
     <section id="projects" className="relative w-full bg-transparent overflow-hidden py-20 border-b border-border/80">

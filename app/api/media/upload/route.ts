@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyJwt } from "@/lib/auth";
 import { cookies } from "next/headers";
-import fs from "fs/promises";
-import path from "path";
+import { supabaseAdmin } from "@/lib/supabase";
 
 async function checkAuth(req: NextRequest) {
   const cookieStore = await cookies();
@@ -37,9 +36,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No files provided for upload" }, { status: 400 });
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     const allowedMimeTypes = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
     const uploadedItems = [];
 
@@ -58,18 +54,33 @@ export async function POST(req: NextRequest) {
       // Generate a unique filename using timestamp and safe characters
       const cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
       const filename = `${Date.now()}_${cleanName}`;
-      const filePath = path.join(uploadDir, filename);
 
-      // Write file to filesystem
-      await fs.writeFile(filePath, buffer);
+      // Upload file to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+        .from("portfolio")
+        .upload(filename, buffer, {
+          contentType: file.type,
+          upsert: false,
+        });
 
-      const url = `/uploads/${filename}`;
+      if (uploadError) {
+        console.error("Supabase Storage Upload Error:", uploadError);
+        return NextResponse.json(
+          { error: `Failed to upload ${file.name} to Supabase Storage: ${uploadError.message}` },
+          { status: 500 }
+        );
+      }
+
+      // Get Public URL
+      const { data: { publicUrl } } = supabaseAdmin.storage
+        .from("portfolio")
+        .getPublicUrl(filename);
 
       // Save record in DB
       const media = await prisma.media.create({
         data: {
           filename: file.name,
-          url,
+          url: publicUrl,
           mimeType: file.type,
           size: file.size
         }

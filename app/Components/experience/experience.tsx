@@ -2,7 +2,18 @@
 import { motion } from "framer-motion";
 import { Briefcase, Calendar, CheckCircle2, GraduationCap } from "lucide-react";
 
-const Experience = () => {
+const getIcon = (iconName: string) => {
+  switch (iconName) {
+    case "Briefcase":
+      return <Briefcase size={14} />;
+    case "GraduationCap":
+      return <GraduationCap size={14} />;
+    default:
+      return <Briefcase size={14} />;
+  }
+};
+
+const Experience = ({ experienceData: dbExperienceData }: { experienceData?: any[] }) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -48,6 +59,17 @@ const Experience = () => {
       ]
     }
   ];
+
+  const resolvedExperiences = dbExperienceData && dbExperienceData.length > 0
+    ? dbExperienceData.map(exp => ({
+        type: exp.type,
+        role: exp.role,
+        company: exp.company,
+        duration: exp.duration,
+        icon: getIcon(exp.icon),
+        points: typeof exp.points === "string" ? (() => { try { return JSON.parse(exp.points); } catch(e) { return [exp.points]; } })() : exp.points || []
+      }))
+    : experiences;
 
   return (
     <section id="experience" className="relative w-full bg-transparent overflow-hidden py-24 border-b border-border/80">
@@ -96,7 +118,7 @@ const Experience = () => {
             viewport={{ once: true, margin: "-100px" }}
             className="space-y-12"
           >
-            {experiences.map((exp, index) => (
+            {resolvedExperiences.map((exp, index) => (
               <motion.div
                 key={index}
                 variants={itemVariants}
@@ -129,7 +151,7 @@ const Experience = () => {
                   </div>
 
                   <ul className="space-y-3 font-sans">
-                    {exp.points.map((point, idx) => (
+                    {exp.points.map((point: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-muted-foreground leading-relaxed">
                         <CheckCircle2 size={14} className="text-primary mt-0.5 shrink-0" />
                         <span>{point}</span>

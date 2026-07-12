@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Code2, Smartphone, Database, Wrench, CheckCircle } from "lucide-react";
 
-export const TechCategories = [
+export const TechCategoriesDefault = [
   {
     title: "Frontend Engineering",
     description: "Building responsive, fast, and SEO-optimized web applications with modern rendering patterns.",
@@ -29,7 +29,7 @@ export const TechCategories = [
   },
 ];
 
-const Expertise = () => {
+const Expertise = ({ skillsData, servicesData }: { skillsData?: any[]; servicesData?: any[] }) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -48,6 +48,25 @@ const Expertise = () => {
       transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
     },
   };
+
+  // Group database skills by category dynamically
+  let resolvedCategories = TechCategoriesDefault;
+  if (skillsData && skillsData.length > 0) {
+    const uniqueCategories = Array.from(new Set(skillsData.map((s) => s.category)));
+    resolvedCategories = uniqueCategories.map((catName) => {
+      const defaultCat = TechCategoriesDefault.find((c) => c.title === catName);
+      const categorySkills = skillsData
+        .filter((s) => s.category === catName)
+        .map((s) => s.name);
+
+      return {
+        title: catName,
+        description: defaultCat?.description || `Professional expertise in ${catName} technologies and tools.`,
+        icon: defaultCat?.icon || <Code2 size={18} className="text-primary" />,
+        skills: categorySkills,
+      };
+    });
+  }
 
   return (
     <div className="w-full">
@@ -97,7 +116,7 @@ const Expertise = () => {
             viewport={{ once: true, margin: "-100px" }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full"
           >
-            {TechCategories.map((cat, idx) => (
+            {resolvedCategories.map((cat, idx) => (
               <motion.div
                 key={idx}
                 variants={itemVariants}
@@ -175,7 +194,7 @@ const Expertise = () => {
             viewport={{ once: true, margin: "-100px" }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full"
           >
-            {TechCategories.map((cat, idx) => (
+            {resolvedCategories.map((cat, idx) => (
               <motion.div
                 key={idx}
                 variants={itemVariants}

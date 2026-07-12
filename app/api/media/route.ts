@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyJwt } from "@/lib/auth";
 import { cookies } from "next/headers";
-import fs from "fs/promises";
-import path from "path";
+import { supabaseAdmin } from "@/lib/supabase";
 
 async function checkAuth(req: NextRequest) {
   const cookieStore = await cookies();
@@ -121,12 +120,15 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Media item not found" }, { status: 404 });
     }
 
-    // Delete file from disk
-    const filePath = path.join(process.cwd(), "public", mediaItem.url);
-    try {
-      await fs.unlink(filePath);
-    } catch (err) {
-      console.warn(`File on disk not found for deletion: ${filePath}`);
+    // Delete file from Supabase Storage
+    const filename = mediaItem.url.split("/").pop();
+    if (filename) {
+      const { error: deleteError } = await supabaseAdmin.storage
+        .from("portfolio")
+        .remove([filename]);
+      if (deleteError) {
+        console.error("Supabase Storage Delete Error:", deleteError);
+      }
     }
 
     // Delete record from database

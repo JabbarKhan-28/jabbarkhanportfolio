@@ -5,7 +5,7 @@ import Logo from "../../../assets/logo/logo.png";
 import { Github, Linkedin } from "../common/icons";
 import { ArrowUp } from "lucide-react";
 
-const Footer = () => {
+const Footer = ({ contactData }: { contactData?: any }) => {
   const currentYear = new Date().getFullYear();
 
   const links = [
@@ -22,6 +22,9 @@ const Footer = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const githubLink = contactData?.github || "https://github.com/JabbarKhan-28";
+  const linkedinLink = contactData?.linkedin || "https://linkedin.com/in/jabbar-khan";
 
   return (
     <footer className="relative border-t border-border/80 bg-card/40 backdrop-blur-md overflow-hidden font-sans">
@@ -63,7 +66,7 @@ const Footer = () => {
         <div className="flex flex-col items-center md:items-end gap-3 shrink-0">
           <div className="flex items-center gap-3">
             <a
-              href="https://github.com/JabbarKhan-28"
+              href={githubLink}
               target="_blank"
               rel="noopener noreferrer"
               className="w-8 h-8 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all duration-300 shadow-xs"
@@ -72,7 +75,7 @@ const Footer = () => {
               <Github size={14} />
             </a>
             <a
-              href="https://linkedin.com/in/jabbar-khan"
+              href={linkedinLink}
               target="_blank"
               rel="noopener noreferrer"
               className="w-8 h-8 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all duration-300 shadow-xs"

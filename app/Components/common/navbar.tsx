@@ -58,7 +58,11 @@ const CollaborateButton = ({ className }: { className?: string }) => (
   </a>
 );
 
-const Navbar = () => {
+const Navbar = ({ navigationData: dbNavigationData }: { navigationData?: any[] }) => {
+  const resolvedNavigation = dbNavigationData 
+    ? dbNavigationData.filter(item => item.visible).map(item => ({ title: item.label, href: item.href }))
+    : navigationData;
+
   const [sticky, setSticky] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -183,7 +187,7 @@ const Navbar = () => {
           <div className="hidden lg:block overflow-x-auto select-none">
             <NavigationMenu className="bg-muted/30 border border-border/80 backdrop-blur-sm p-1 rounded-full w-fit">
               <NavigationMenuList className="flex gap-1">
-                {navigationData.map((navItem) => {
+                {resolvedNavigation.map((navItem) => {
                   const itemKey = navItem.href.replace("#", "");
                   const isActive = activeSection === itemKey;
                   return (
@@ -222,7 +226,7 @@ const Navbar = () => {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-52 mt-2 bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-lg">
-                {navigationData.map((item) => {
+                {resolvedNavigation.map((item) => {
                   const isActive = activeSection === item.href.replace("#", "");
                   return (
                     <DropdownMenuItem

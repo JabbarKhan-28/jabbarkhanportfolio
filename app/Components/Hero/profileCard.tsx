@@ -4,7 +4,10 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Img from "../../../assets/JabbarKhanProfilePicture.jpg";
 
-const ProfileCard = ({ className }: { className?: string }) => {
+const ProfileCard = ({ className, aboutData, heroData }: { className?: string; aboutData?: any; heroData?: any }) => {
+  const profileImageSrc = aboutData?.profilePic || Img;
+  const isStringImage = typeof profileImageSrc === "string";
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -21,20 +24,28 @@ const ProfileCard = ({ className }: { className?: string }) => {
       <div className="absolute -inset-px bg-linear-to-tr from-primary/5 via-transparent to-primary/5 rounded-2xl pointer-events-none" />
 
       <div className="relative w-full aspect-square rounded-xl overflow-hidden border border-border/40 bg-muted/20 group/img">
-        <Image
-          src={Img}
-          alt="Jabbar Khan profile"
-          width={300}
-          height={300}
-          className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover/img:scale-103"
-          priority
-        />
+        {isStringImage ? (
+          <img
+            src={profileImageSrc}
+            alt="Jabbar Khan profile"
+            className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover/img:scale-103"
+          />
+        ) : (
+          <Image
+            src={profileImageSrc}
+            alt="Jabbar Khan profile"
+            width={300}
+            height={300}
+            className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover/img:scale-103"
+            priority
+          />
+        )}
         {/* Soft overlay */}
         <div className="absolute inset-0 bg-linear-to-t from-background/30 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
       </div>
 
       <h3 className="mt-4 text-base font-bold font-heading text-center text-foreground tracking-tight">
-        Jabbar Khan
+        {aboutData?.name || "Jabbar Khan"}
       </h3>
 
       <div className="mt-4 pt-4 border-t border-border space-y-2.5 relative z-10 font-sans">

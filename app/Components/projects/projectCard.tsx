@@ -1,16 +1,19 @@
-"use client";
 import Image from "next/image";
-import { Project } from "../../data/projects";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Code, CheckCircle, Lightbulb, Zap, ShieldCheck } from "lucide-react";
 import { Github } from "../common/icons";
 import { motion } from "framer-motion";
 
 interface ProjectCardProps {
-  project: Project;
+  project: any;
 }
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
+  const isStringImage = typeof project.image === "string";
+  const resolvedSkills = typeof project.skills === "string"
+    ? project.skills.split(",").map((s: string) => s.trim()).filter(Boolean)
+    : project.skills || [];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -24,12 +27,20 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="space-y-4">
           {/* Project Image Box */}
           <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted/20 group/img">
-            <Image
-              src={project.image}
-              alt={`${project.name} preview`}
-              className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover/img:scale-102"
-              placeholder="blur"
-            />
+            {isStringImage ? (
+              <img
+                src={project.image}
+                alt={`${project.name} preview`}
+                className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover/img:scale-102"
+              />
+            ) : (
+              <Image
+                src={project.image}
+                alt={`${project.name} preview`}
+                className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover/img:scale-102"
+                placeholder="blur"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent opacity-60" />
           </div>
 
@@ -45,7 +56,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
           {/* Tech Stack Badges */}
           <div className="flex flex-wrap gap-1.5 pt-2">
-            {project.skills.map((skill) => (
+            {resolvedSkills.map((skill: string) => (
               <span
                 key={skill}
                 className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/5 border border-primary/15 text-primary tracking-wide"
@@ -58,36 +69,40 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3 pt-4 border-t border-border">
-          <a
-            href={project.githubLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1"
-          >
-            <Button
-              variant="outline"
-              size="default"
-              className="w-full justify-center gap-2 rounded-xl border-border bg-card hover:bg-muted/40 text-foreground cursor-pointer text-xs font-semibold h-11"
+          {project.githubLink && (
+            <a
+              href={project.githubLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1"
             >
-              <Github size={14} />
-              <span>GitHub Code</span>
-            </Button>
-          </a>
+              <Button
+                variant="outline"
+                size="default"
+                className="w-full justify-center gap-2 rounded-xl border-border bg-card hover:bg-muted/40 text-foreground cursor-pointer text-xs font-semibold h-11"
+              >
+                <Github size={14} />
+                <span>GitHub Code</span>
+              </Button>
+            </a>
+          )}
 
-          <a
-            href={project.liveLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1"
-          >
-            <Button
-              size="default"
-              className="w-full justify-center gap-2 rounded-xl bg-linear-to-r from-primary to-blue-600 hover:from-primary/95 hover:to-blue-500 shadow-xs hover:shadow-md transition-all cursor-pointer text-xs font-semibold h-11 text-primary-foreground"
+          {project.liveLink && (
+            <a
+              href={project.liveLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1"
             >
-              <span>Live Demo</span>
-              <ExternalLink size={14} />
-            </Button>
-          </a>
+              <Button
+                size="default"
+                className="w-full justify-center gap-2 rounded-xl bg-linear-to-r from-primary to-blue-600 hover:from-primary/95 hover:to-blue-500 shadow-xs hover:shadow-md transition-all cursor-pointer text-xs font-semibold h-11 text-primary-foreground"
+              >
+                <span>Live Demo</span>
+                <ExternalLink size={14} />
+              </Button>
+            </a>
+          )}
         </div>
       </div>
 
@@ -95,59 +110,69 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       <div className="lg:col-span-7 flex flex-col justify-between gap-5 font-sans border-t lg:border-t-0 lg:border-l border-border/80 pt-6 lg:pt-0 lg:pl-8">
         <div className="space-y-4">
           {/* Problem */}
-          <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
-              <Lightbulb size={11} className="text-amber-500" />
-              <span>The Problem</span>
-            </h4>
-            <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
-              {project.problem}
-            </p>
-          </div>
+          {project.problem && (
+            <div className="space-y-1">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
+                <Lightbulb size={11} className="text-amber-500" />
+                <span>The Problem</span>
+              </h4>
+              <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
+                {project.problem}
+              </p>
+            </div>
+          )}
 
           {/* Solution */}
-          <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
-              <CheckCircle size={11} className="text-emerald-500" />
-              <span>The Solution</span>
-            </h4>
-            <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
-              {project.solution}
-            </p>
-          </div>
+          {project.solution && (
+            <div className="space-y-1">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
+                <CheckCircle size={11} className="text-emerald-500" />
+                <span>The Solution</span>
+              </h4>
+              <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
+                {project.solution}
+              </p>
+            </div>
+          )}
 
           {/* Architecture */}
-          <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
-              <Code size={11} className="text-primary" />
-              <span>Data Architecture</span>
-            </h4>
-            <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
-              {project.architecture}
-            </p>
-          </div>
+          {project.architecture && (
+            <div className="space-y-1">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
+                <Code size={11} className="text-primary" />
+                <span>Data Architecture</span>
+              </h4>
+              <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
+                {project.architecture}
+              </p>
+            </div>
+          )}
 
           {/* Challenges & Optimizations */}
-          <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
-              <Zap size={11} className="text-secondary" />
-              <span>Key Challenges & Optimizations</span>
-            </h4>
-            <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
-              {project.challenges}
-            </p>
-          </div>
+          {project.challenges && (
+            <div className="space-y-1">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
+                <Zap size={11} className="text-secondary" />
+                <span>Key Challenges & Optimizations</span>
+              </h4>
+              <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
+                {project.challenges}
+              </p>
+            </div>
+          )}
 
           {/* Result */}
-          <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
-              <ShieldCheck size={11} className="text-cyan-500" />
-              <span>Outcome & Metrics</span>
-            </h4>
-            <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
-              {project.result}
-            </p>
-          </div>
+          {project.result && (
+            <div className="space-y-1">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
+                <ShieldCheck size={11} className="text-cyan-500" />
+                <span>Outcome & Metrics</span>
+              </h4>
+              <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium">
+                {project.result}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

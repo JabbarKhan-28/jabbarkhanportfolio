@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Trophy, Award, Smartphone, Sparkles } from "lucide-react";
+import { Trophy, Award, Smartphone, Sparkles, BadgeCheck } from "lucide-react";
 import { Github } from "../common/icons";
 
 export interface Achievement {
@@ -42,7 +42,24 @@ const achievementsData: Achievement[] = [
   },
 ];
 
-const Achievements = () => {
+
+
+const getIcon = (iconName: string) => {
+  switch (iconName) {
+    case "Award":
+      return <Award className="text-primary" size={18} />;
+    case "Trophy":
+      return <Trophy className="text-secondary" size={18} />;
+    case "Smartphone":
+      return <Smartphone className="text-emerald-500" size={18} />;
+    case "Github":
+      return <Github className="text-cyan-500" size={18} />;
+    default:
+      return <BadgeCheck className="text-primary" size={18} />;
+  }
+};
+
+const Achievements = ({ achievementsData: dbAchievementsData }: { achievementsData?: any[] }) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -61,6 +78,16 @@ const Achievements = () => {
       transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
     },
   };
+
+  const resolvedAchievements = dbAchievementsData && dbAchievementsData.length > 0
+    ? dbAchievementsData.filter(cert => cert.published).map(cert => ({
+        title: cert.title,
+        issuer: cert.issuer,
+        date: cert.date,
+        description: cert.description || "",
+        icon: getIcon(cert.icon)
+      }))
+    : achievementsData;
 
   return (
     <section id="achievements" className="relative w-full bg-transparent overflow-hidden py-24 border-b border-border/80">
@@ -108,7 +135,7 @@ const Achievements = () => {
           viewport={{ once: true, margin: "-100px" }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full"
         >
-          {achievementsData.map((item, index) => (
+          {resolvedAchievements.map((item, index) => (
             <motion.div
               key={index}
               variants={itemVariants}

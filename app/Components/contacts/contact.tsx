@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, MapPin, Send, MessageSquare, Phone, CheckCircle2, AlertCircle } from "lucide-react";
 import { Github, Linkedin } from "../common/icons";
 
-const Contact = () => {
+const Contact = ({ contactData }: { contactData?: any }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,12 +28,26 @@ const Contact = () => {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setSubmitStatus("success");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch (err) {
+      console.error("Failed to submit message:", err);
+      setSubmitStatus("error");
+    } finally {
       setIsSubmitting(false);
-      setSubmitStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
       setTimeout(() => setSubmitStatus("idle"), 5000);
-    }, 1500);
+    }
   };
 
   const containerVariants = {
@@ -54,6 +68,12 @@ const Contact = () => {
     "w-full rounded-xl bg-card border border-border/80 hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus:border-primary/80 transition-all py-3 px-4 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/40 font-sans shadow-xs";
 
   const labelClasses = "text-[10px] font-bold text-muted-foreground tracking-wider uppercase font-heading";
+
+  const email = contactData?.email || "jabbar118114@gmail.com";
+  const phone = contactData?.phone || "+92 312 8983602";
+  const address = contactData?.address || "Pakistan (GMT+5) / Remote Worldwide";
+  const githubLink = contactData?.github || "https://github.com/JabbarKhan-28";
+  const linkedinLink = contactData?.linkedin || "https://linkedin.com/in/jabbar-khan";
 
   return (
     <section id="contact" className="relative w-full bg-transparent overflow-hidden py-24">
@@ -104,20 +124,20 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className={labelClasses}>Location</h4>
-                  <p className="text-xs sm:text-sm font-bold text-foreground font-sans">Pakistan (GMT+5) / Remote Worldwide</p>
+                  <p className="text-xs sm:text-sm font-bold text-foreground font-sans">{address}</p>
                 </div>
               </motion.div>
 
               {/* Email */}
               <motion.div variants={itemVariants} className="flex items-center gap-4 group">
-                <a href="mailto:jabbar118114@gmail.com" className="flex items-center gap-4 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 w-fit">
+                <a href={`mailto:${email}`} className="flex items-center gap-4 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 w-fit">
                   <div className="w-11 h-11 rounded-xl bg-card border border-border flex items-center justify-center text-primary group-hover:border-primary/30 transition-colors duration-300 shadow-xs">
                     <Mail size={16} />
                   </div>
                   <div>
                     <h4 className={labelClasses}>Email</h4>
                     <p className="text-xs sm:text-sm font-bold text-foreground hover:text-primary transition-colors font-sans">
-                      jabbar118114@gmail.com
+                      {email}
                     </p>
                   </div>
                 </a>
@@ -125,14 +145,14 @@ const Contact = () => {
 
               {/* Phone */}
               <motion.div variants={itemVariants} className="flex items-center gap-4 group">
-                <a href="tel:+923128983602" className="flex items-center gap-4 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 w-fit">
+                <a href={`tel:${phone}`} className="flex items-center gap-4 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 w-fit">
                   <div className="w-11 h-11 rounded-xl bg-card border border-border flex items-center justify-center text-primary group-hover:border-primary/30 transition-colors duration-300 shadow-xs">
                     <Phone size={16} />
                   </div>
                   <div>
                     <h4 className={labelClasses}>Phone</h4>
                     <p className="text-xs sm:text-sm font-bold text-foreground hover:text-primary transition-colors font-sans">
-                      +92 312 8983602
+                      {phone}
                     </p>
                   </div>
                 </a>
@@ -141,7 +161,7 @@ const Contact = () => {
               {/* Social Channels */}
               <motion.div variants={itemVariants} className="flex items-center gap-3 pt-6 border-t border-border/80">
                 <a
-                  href="https://github.com/JabbarKhan-28"
+                  href={githubLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 transition-all duration-300 shadow-xs"
@@ -150,7 +170,7 @@ const Contact = () => {
                   <Github size={16} />
                 </a>
                 <a
-                  href="https://linkedin.com/in/jabbar-khan"
+                  href={linkedinLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 transition-all duration-300 shadow-xs"

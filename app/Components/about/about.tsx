@@ -4,7 +4,20 @@ import { User, Target, Compass, Coffee } from "lucide-react";
 import Image from "next/image";
 import Img from "../../../assets/JabbarKhanProfilePicture.jpg";
 
-const About = () => {
+const About = ({ aboutData }: { aboutData?: any }) => {
+  const profilePicSrc = aboutData?.profilePic || Img;
+  const isStringImage = typeof profilePicSrc === "string";
+
+  const bio = aboutData?.biography || "Hello! I'm Jabbar Khan, a Software Engineer with production experience building cross-platform mobile and web applications using React Native, Next.js, TypeScript, and Expo. I specialize in architecting clean, maintainable component systems, integrating offline-first storage and Firebase API layers, implementing persistent auth flows, and shipping optimized release builds for Android, iOS, and web.";
+  const journey = aboutData?.journey || "My professional focus lies in performance optimization, clean state transitions, and responsive user experiences — from buttery smooth gestures to SEO-optimized, highly structured web platforms. I am currently an App Developer Intern at Zaryans Consulting, working closely with senior engineering leads to maintain and ship scale-ready codebases.";
+
+  let goals = ["Clean, Scale Code", "UX First Principles", "Tech Curation"];
+  if (aboutData?.goals) {
+    try {
+      goals = JSON.parse(aboutData.goals);
+    } catch (e) {}
+  }
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -48,12 +61,20 @@ const About = () => {
               <div className="absolute -inset-px bg-gradient-to-tr from-primary/10 via-transparent to-secondary/10 rounded-2xl pointer-events-none" />
 
               <div className="w-full h-full rounded-xl overflow-hidden bg-muted/20 border border-border/40 relative group">
-                <Image
-                  src={Img}
-                  alt="Jabbar Khan working"
-                  className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-102"
-                  placeholder="blur"
-                />
+                {isStringImage ? (
+                  <img
+                    src={profilePicSrc}
+                    alt="Jabbar Khan working"
+                    className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-102"
+                  />
+                ) : (
+                  <Image
+                    src={profilePicSrc}
+                    alt="Jabbar Khan working"
+                    className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-102"
+                    placeholder="blur"
+                  />
+                )}
               </div>
             </motion.div>
           </div>
@@ -80,14 +101,14 @@ const About = () => {
               variants={itemVariants}
               className="mt-6 text-sm sm:text-base text-muted-foreground leading-relaxed font-sans"
             >
-              Hello! I&apos;m Jabbar Khan, a Software Engineer with production experience building cross-platform mobile and web applications using React Native, Next.js, TypeScript, and Expo. I specialize in architecting clean, maintainable component systems, integrating offline-first storage and Firebase API layers, implementing persistent auth flows, and shipping optimized release builds for Android, iOS, and web.
+              {bio}
             </motion.p>
 
             <motion.p
               variants={itemVariants}
               className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed font-sans"
             >
-              My professional focus lies in performance optimization, clean state transitions, and responsive user experiences — from buttery smooth gestures to SEO-optimized, highly structured web platforms. I am currently an App Developer Intern at Zaryans Consulting, working closely with senior engineering leads to maintain and ship scale-ready codebases.
+              {journey}
             </motion.p>
 
             {/* Quick stats / fun facts grid */}
@@ -101,7 +122,7 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">My Goal</h4>
-                  <p className="text-xs font-bold text-foreground">Clean, Scale Code</p>
+                  <p className="text-xs font-bold text-foreground">{goals[0] || "Clean, Scale Code"}</p>
                 </div>
               </div>
 
@@ -111,7 +132,7 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Philosophy</h4>
-                  <p className="text-xs font-bold text-foreground">UX First Principles</p>
+                  <p className="text-xs font-bold text-foreground">{goals[1] || "UX First Principles"}</p>
                 </div>
               </div>
 
@@ -121,7 +142,7 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Interest</h4>
-                  <p className="text-xs font-bold text-foreground">Tech Curation</p>
+                  <p className="text-xs font-bold text-foreground">{goals[2] || "Tech Curation"}</p>
                 </div>
               </div>
             </motion.div>

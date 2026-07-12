@@ -5,7 +5,7 @@ import { Briefcase, GraduationCap, ArrowRight, Download, CheckCircle2 } from "lu
 import { Github, Linkedin } from "../common/icons";
 import ProfileCard from "./profileCard";
 
-const Hero = () => {
+const Hero = ({ heroData, aboutData }: { heroData?: any; aboutData?: any }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -35,6 +35,27 @@ const Hero = () => {
     },
   };
 
+  // Dynamic Data & Fallbacks
+  const headline = heroData?.headline || "Designing & \nbuilding high-impact \nmobile & web apps.";
+  const subheading = heroData?.subheading || "React Native mobile developer and Next.js web developer helping startups and modern brands create premium digital interfaces through technical precision, optimized codebases, and smooth micro-interactions.";
+  const availabilityBadge = heroData?.availabilityBadge !== undefined ? heroData.availabilityBadge : true;
+  const currentRole = heroData?.currentPosition || "APP INTERN";
+  const currentCompany = heroData?.currentCompany || "ZARYANS";
+  const buttonText = heroData?.buttonText || "View Featured Work";
+  const buttonLink = heroData?.buttonLink || "#projects";
+
+  // Parse Stats from AboutSection
+  let stats = [
+    { value: "1+ YR", label: "Experience" },
+    { value: "5+", label: "Built Apps" },
+    { value: "100%", label: "Commitment" }
+  ];
+  if (aboutData?.stats) {
+    try {
+      stats = JSON.parse(aboutData.stats);
+    } catch (e) {}
+  }
+
   return (
     <section id="home" className="relative w-full bg-transparent overflow-hidden pt-32 pb-16 px-4 md:px-8 border-b border-border/80 grid-backdrop">
       {/* Mouse Follow Glow */}
@@ -57,69 +78,78 @@ const Hero = () => {
           animate="visible"
         >
           {/* Left Text Block */}
-          <div className="flex flex-col items-start text-left">
+          <div className="flex flex-col items-start text-left w-full">
             {/* Status Badges */}
             <div className="flex flex-wrap gap-2.5 mb-6">
-              <motion.div
-                variants={itemVariants}
-                className="inline-flex items-center gap-1.5 border border-primary/20 bg-primary/5 text-primary text-[10px] font-bold tracking-wider px-3.5 py-1.5 rounded-full shadow-xs"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                AVAILABLE FOR HIRE
-              </motion.div>
+              {availabilityBadge && (
+                <motion.div
+                  variants={itemVariants}
+                  className="inline-flex items-center gap-1.5 border border-primary/20 bg-primary/5 text-primary text-[10px] font-bold tracking-wider px-3.5 py-1.5 rounded-full shadow-xs"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                  AVAILABLE FOR HIRE
+                </motion.div>
+              )}
 
               <motion.div
                 variants={itemVariants}
                 className="inline-flex items-center gap-1.5 border border-secondary/20 bg-secondary/5 text-secondary text-[10px] font-bold tracking-wider px-3.5 py-1.5 rounded-full shadow-xs"
               >
                 <Briefcase size={10} />
-                <span>APP INTERN @ ZARYANS</span>
+                <span>{currentRole} @ {currentCompany}</span>
               </motion.div>
             </div>
 
             {/* Display Heading */}
             <motion.h1
               variants={itemVariants}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black font-heading leading-[1.08] tracking-tight text-foreground"
+              className="text-4xl sm:text-5xl lg:text-6xl font-black font-heading leading-[1.08] tracking-tight text-foreground whitespace-pre-line"
             >
-              Designing &
-              <br />
-              building high-impact
-              <br />
-              <span className="text-gradient-blue font-black">
-                mobile & web apps.
-              </span>
+              {headline.includes("\n") ? (
+                headline.split("\n").map((part: string, index: number) => {
+                  const isLast = index === headline.split("\n").length - 1;
+                  return (
+                    <span key={index}>
+                      {isLast ? (
+                        <span className="text-gradient-blue font-black">{part}</span>
+                      ) : (
+                        <>
+                          {part}
+                          <br />
+                        </>
+                      )}
+                    </span>
+                  );
+                })
+              ) : (
+                headline
+              )}
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
               className="mt-6 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-[560px]"
             >
-              React Native mobile developer and Next.js web developer helping startups and modern brands create premium digital interfaces through technical precision, optimized codebases, and smooth micro-interactions.
+              {subheading}
             </motion.p>
 
             {/* Inline Stats Counter */}
             <motion.div
               variants={itemVariants}
-              className="flex items-center gap-6 mt-8 py-4 border-y border-border/80 w-full max-w-[500px]"
+              className="flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-6 mt-8 py-4 border-y border-border/80 w-full max-w-[500px]"
             >
-              <div>
-                <p className="text-2xl font-black font-heading text-primary leading-none">1+ YR</p>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">Experience</p>
-              </div>
-              <div className="w-px h-8 bg-border" />
-              <div>
-                <p className="text-2xl font-black font-heading text-primary leading-none">5+</p>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">Built Apps</p>
-              </div>
-              <div className="w-px h-8 bg-border" />
-              <div>
-                <p className="text-2xl font-black font-heading text-primary leading-none">100%</p>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">Commitment</p>
-              </div>
+              {stats.map((stat: any, idx: number) => (
+                <div key={idx} className="flex items-center gap-4 sm:gap-6">
+                  {idx > 0 && <div className="hidden sm:block w-px h-8 bg-border" />}
+                  <div>
+                    <p className="text-2xl font-black font-heading text-primary leading-none">{stat.value}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">{stat.label}</p>
+                  </div>
+                </div>
+              ))}
             </motion.div>
 
             {/* Action Buttons */}
@@ -127,17 +157,17 @@ const Hero = () => {
               variants={itemVariants}
               className="mt-8 flex flex-wrap items-center gap-4"
             >
-              <a href="#projects">
+              <a href={buttonLink}>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="bg-linear-to-r from-primary to-blue-600 hover:from-primary/95 hover:to-blue-500 transition-colors text-primary-foreground text-xs font-semibold px-6 py-3.5 rounded-xl shadow-md hover:shadow-lg shadow-primary/10 flex items-center gap-2 cursor-pointer"
                 >
-                  <span>View Featured Work</span>
+                  <span>{buttonText}</span>
                   <ArrowRight size={14} />
                 </motion.button>
               </a>
-              <a href="/JabbarKhanResume.pdf" target="_blank" rel="noopener noreferrer">
+              <a href={aboutData?.resumeUrl || "/JabbarKhanResume.pdf"} target="_blank" rel="noopener noreferrer">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -174,7 +204,7 @@ const Hero = () => {
 
           {/* Right Column: profile card */}
           <div className="w-full flex justify-center lg:justify-end">
-            <ProfileCard />
+            <ProfileCard aboutData={aboutData} heroData={heroData} />
           </div>
         </motion.div>
 
